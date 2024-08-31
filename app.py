@@ -2,9 +2,16 @@ import requests
 import sqlite3
 import time
 from datetime import datetime
+import json
 
-# API key
-API_KEY = '38797a4a8ccfa191f3cc8fe4b7d6701b'
+# Load API key from config.json
+with open('config.json') as config_file:
+    config = json.load(config_file)
+
+API_KEY = config.get('API_KEY')
+
+if not API_KEY:
+    raise ValueError("No API key found. Make sure to add your API key to config.json.")
 
 # List of cities
 cities = [
