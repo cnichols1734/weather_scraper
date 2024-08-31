@@ -15,3 +15,4 @@ clear_table()
 
 # Close the connection
 conn.close()
+
