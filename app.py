@@ -120,7 +120,7 @@ def fetch_current_weather(city):
 # Run this once to create the table
 create_table()
 
-# Main loop to fetch data every 15 minutes
+# Main loop to fetch data every 10 minutes
 try:
     while True:
         start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
