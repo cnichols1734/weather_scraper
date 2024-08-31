@@ -1,6 +1,6 @@
 import sqlite3
 
-# Correct SQLite database connection
+# SQLite database connection
 conn = sqlite3.connect('weather_data_updated.db')
 cursor = conn.cursor()
 
@@ -15,4 +15,3 @@ clear_table()
 
 # Close the connection
 conn.close()
-

@@ -43,12 +43,7 @@ def create_table():
             sunset DATETIME,
             dew_point REAL,
             uv_index REAL,
-            precipitation_type TEXT,
-            air_quality_index INTEGER,
-            sun_angle REAL,
-            ground_temperature REAL,
-            weather_warnings TEXT,
-            wind_chill REAL
+            precipitation_type TEXT
         )
     ''')
     conn.commit()
@@ -83,12 +78,7 @@ def fetch_current_weather(city):
             "sunset": datetime.fromtimestamp(data['current']['sunset']),
             "dew_point": data['current']['dew_point'],
             "uv_index": data['current']['uvi'],
-            "precipitation_type": data['current']['weather'][0]['main'],
-            "air_quality_index": None,  # AQI not available in One Call API
-            "sun_angle": None,  # Sun angle data not available in One Call API
-            "ground_temperature": None,  # Ground temperature data not available in One Call API
-            "weather_warnings": data.get('alerts', [{}])[0].get('description', None),
-            "wind_chill": data['current'].get('wind_chill', None)
+            "precipitation_type": data['current']['weather'][0]['main']
         }
 
         # Insert data into SQLite database
@@ -97,14 +87,12 @@ def fetch_current_weather(city):
                 city_name, timestamp, temperature, feels_like, humidity, pressure,
                 wind_speed, wind_direction, weather_description, cloudiness,
                 visibility, rain_volume, snow_volume, sunrise, sunset,
-                dew_point, uv_index, precipitation_type, air_quality_index,
-                sun_angle, ground_temperature, weather_warnings, wind_chill
+                dew_point, uv_index, precipitation_type
             ) VALUES (
                 :city_name, :timestamp, :temperature, :feels_like, :humidity, :pressure,
                 :wind_speed, :wind_direction, :weather_description, :cloudiness,
                 :visibility, :rain_volume, :snow_volume, :sunrise, :sunset,
-                :dew_point, :uv_index, :precipitation_type, :air_quality_index,
-                :sun_angle, :ground_temperature, :weather_warnings, :wind_chill
+                :dew_point, :uv_index, :precipitation_type
             )
         ''', weather_info)
 
@@ -118,7 +106,6 @@ def fetch_current_weather(city):
         print(f"    - Visibility: {weather_info['visibility']} feet, Rain: {weather_info['rain_volume']} inches, Snow: {weather_info['snow_volume']} inches")
         print(f"    - Sunrise: {weather_info['sunrise'].strftime('%Y-%m-%d %H:%M:%S')}, Sunset: {weather_info['sunset'].strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"    - Dew Point: {weather_info['dew_point']}°F, UV Index: {weather_info['uv_index']}, Precipitation Type: {weather_info['precipitation_type']}")
-        print(f"    - Weather Warnings: {weather_info['weather_warnings']}, Wind Chill: {weather_info['wind_chill']}°F\n")
     else:
         print(f"[{current_time}] ERROR: Failed to get weather data for {city['name']}. HTTP Status code: {response.status_code}")
         print(f"    - Response Content: {data}\n")
