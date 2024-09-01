@@ -120,7 +120,7 @@ def fetch_current_weather(city):
 # Run this once to create the table
 create_table()
 
-# Main loop to fetch data every 10 minutes
+# Main loop to fetch data every 15 minutes
 try:
     while True:
         start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -128,8 +128,8 @@ try:
         for city in cities:
             fetch_current_weather(city)
         end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"[{end_time}] COMPLETED WEATHER DATA COLLECTION. Sleeping for 10 minutes...\n---\n")
-        time.sleep(600)  # Sleep for 10 minutes
+        print(f"[{end_time}] COMPLETED WEATHER DATA COLLECTION. Sleeping for 15 minutes...\n---\n")
+        time.sleep(900)  # Sleep for 15 minutes
 except KeyboardInterrupt:
     print("Script interrupted by user. Closing the database connection.")
 finally:
