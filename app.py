@@ -1,12 +1,15 @@
 import requests
 import sqlite3
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import logging
+from pytz import timezone
 
 # Set up logging
 logging.basicConfig(filename='weather_data.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+central = timezone('US/Central')
 
 # Load API key from config.json
 with open('config.json') as config_file:
@@ -121,8 +124,9 @@ create_table()
 # Main loop to fetch data every 15 minutes
 try:
     while True:
-        start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"---\n[{start_time}] STARTING WEATHER DATA COLLECTION FOR ALL CITIES\n")
+        start_time = datetime.now(central)
+        print(
+            f"---\n[{start_time.strftime('%m-%d-%Y %I:%M:%S %p')} CDT] STARTING WEATHER DATA COLLECTION FOR ALL CITIES\n")
         batch_data = []
 
         for city in cities:
@@ -147,14 +151,19 @@ try:
             ''', batch_data)
             conn.commit()
 
-            end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            print(f"[{end_time}] COMPLETED WEATHER DATA COLLECTION. Inserted {len(batch_data)} records.\n")
+            end_time = datetime.now(central)
+            print(
+                f"[{end_time.strftime('%m-%d-%Y %I:%M:%S %p')} CDT] COMPLETED WEATHER DATA COLLECTION. Inserted {len(batch_data)} records.\n")
         else:
             print("WARNING: No data collected this cycle.\n")
 
-        time_taken = time.time() - datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S").timestamp()
-        print(f"Sleeping for {max(0, 900 - time_taken)} seconds...\n---\n")
-        time.sleep(max(0, 900 - time_taken))  # Adjust sleep to account for the time taken by the operation
+        time_taken = (datetime.now(central) - start_time).total_seconds()
+        sleep_time = max(0, 900 - time_taken)
+        next_run_time = datetime.now(central) + timedelta(seconds=sleep_time)
+
+        print(
+            f"Sleeping for {int(sleep_time)} seconds, next pull will be at {next_run_time.strftime('%m-%d-%Y %I:%M:%S %p')} CDT\n---\n")
+        time.sleep(sleep_time)
 
 except KeyboardInterrupt:
     print("Script interrupted by user. Closing the database connection.")
